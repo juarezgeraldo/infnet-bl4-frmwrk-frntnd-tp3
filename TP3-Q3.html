@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@next"></script>
+    <title>TP3 - Questão 3</title>
+</head>
+<body>
+    <div id="app">
+        <p>Informe o texto:</p>
+        <custon-input v-model="texto"></custon-input>
+        <p>Informe o tamanho do texto:</p>
+        <custon-input v-model="tamanho"></custon-input>
+        <p>Informe a cor do texto:</p>
+        <custon-input v-model="cor"></custon-input>
+        <div :style="{fontSize: tamanho + 'em', color: cor}">
+            <blog-post @enlarge-text="onAlterarTexto" :texto="texto"></blog-post>
+        </div>
+    </div>
+    <script>
+        const App = {
+            data() {
+                return {
+                    texto: '',
+                    tamanho: 1.0,
+                    cor: "#000FFF",
+                }
+            },
+            methods: {
+                onAlterarTexto(tamanhoTexto, corTexto) {
+                    this.tamanho = tamanhoTexto,
+                        this.cor = corTexto
+                }
+            },
+        }
+        const app = Vue.createApp(App)
+        app.component(
+            'blog-post', {
+            props: ['texto'],
+            template: `
+            <div>
+                <slot>
+                    <p>{{texto}}</p>
+                </slot>
+            </div>`
+        }
+        )
+        app.component(
+            'custon-input', {
+            props: ['modelValue'],
+            emits: ['update:modelValue'],
+            template: `<input v-model="value">`,
+            computed: {
+                value: {
+                    get() {
+                        return this.modelValue
+                    },
+                    set(value) {
+                        this.$emit('update:modelValue', value)
+                    }
+                }
+            }
+        }
+        )
+        app.mount('#app')
+    </script>
+</body>
+</html>

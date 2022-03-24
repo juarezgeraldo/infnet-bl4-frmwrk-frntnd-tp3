@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@next"></script>
+    <title>Etapa 5</title>
+</head>
+<body>
+    <div id="app">
+        <quadrado v-bind:cor="cor.codigo"></quadrado>
+        <br>
+        <editacor :cor="cor"></editacor>
+    </div>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    cor: { codigo: '#CCCCCC' }
+                }
+            },
+        })
+        app.component('quadrado', {
+            template: `<div class="quadrado" :style="style"></div>`,
+            props: ['cor'],
+            computed: {
+                style() {
+                    return { backgroundColor: this.cor };
+                }
+            }
+        }),
+        app.component('editacor', {
+            props: { cor: Object },
+            template: `Informe a cor: <input v-model="this.cor.codigo">`
+        }),
+        app.mount('#app')
+    </script>
+    <style>
+        .quadrado {
+            border: 2px solid #aaaaaa;
+            width: 60px;
+            height: 60px;
+        }
+    </style>
+
+</body>
+
+</html>
