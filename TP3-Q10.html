@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/vue@next"></script>
+    <script src="https://unpkg.com/vuex@4"></script>
+    <title>Etapa 5</title>
+</head>
+<body>
+    <div id="app">
+        <contador></contador>
+        <botoes></botoes>
+        <script>
+            const store = Vuex.createStore({
+                state() {
+                    return {
+                        contador: 0,
+                        total: 300,
+                        produtos: [
+                            { nome: 'sapato', valor: 30.22, quantidade: 10 },
+                            { nome: 'meia', valor: 9.89, quantidade: 5 },
+                            { nome: 'bota', valor: 49.45, quantidade: 6 }
+                        ],
+                        usuario: {
+                            nome: 'Tereza',
+                        }
+                    }
+                },
+                getters: {
+                    produtosEmEstoque(state) {
+                        return state.produtos.filter(prod => prod.quantidade > 0)
+                    },
+                    produtosComEstoque: (state) => (quantidade) => {
+                        return state.produtos.filter(prod => prod.quantidade >= quantidade)
+                    }
+                },
+                mutations: {
+                    alterarContador(state, payload) {
+                        state.contador = payload.valor
+                    },
+                    inserirProduto(state, produto) {
+                        state.produtos.push(produto)
+                    },
+                    incrementar(state) {
+                        state.contador++
+                    },
+                    decrementar(state) {
+                        state.contador--
+                    }
+                },
+                actions: {
+                    inserirProduto(context, produto) {
+                        context.commit('inserirProduto', produto)
+                        context.commit('incrementar')
+                    }
+                }
+            })
+            const Contador = {
+                template: `
+                <ul>
+                    <li v-for='produto in produtos'>{{produto.nome}} - {{produto.valor}} - {{produto.quantidade}}</li>
+                </ul>
+                <div>{{contador}}</div>
+                `,
+                computed: {
+                    contador() {
+                        return this.$store.state.contador
+                    },
+                    produtos() {
+                        return this.$store.getters.produtosComEstoque(1)
+                    }
+                }
+            }
+            const Botoes = {
+                template: `
+                <div>
+                    <button @click='incrementar'>+</button>
+                    <button @click='alterarValor'>alterar</button>
+                    <button @click='addProduto'>adicionar</button>
+                    <button @click='decrementar'>-</button>
+                </div>
+                        `,
+                methods: {
+                    incrementar() {
+                        this.$store.commit('incrementar')
+                    },
+                    decrementar() {
+                        this.$store.commit('decrementar')
+                    },
+                    alterarValor() {
+                        this.$store.commit('alterarValor', { valor: 100 })
+                    },
+                    addProduto() {
+                        const produto = { nome: 'mouse', valor: 88.00, quantidade: 17 }
+                        this.$store.dispatch('inserirProduto', produto)
+                    },
+                },
+            }
+            const App = {}
+            const app = Vue.createApp(App)
+            app.component('contador', Contador)
+            app.component('botoes', Botoes)
+            app.use(store)
+            app.mount('#app')
+        </script>
+</body>
+</html>
